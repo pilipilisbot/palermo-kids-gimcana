@@ -126,14 +126,22 @@ const stops = [
 let finalMarker = null;
 function showFinal() {
   if (finalMarker) return;
-  finalMarker = L.marker([38.118467, 13.369816]).addTo(map).bindPopup(`
+  finalMarker = L.marker([38.118467, 13.369816], {
+    icon: L.divIcon({
+      className:'',
+      html:`<div style="width:30px;height:30px;border-radius:50%;background:#ff4d6d;color:#fff;display:flex;align-items:center;justify-content:center;font-size:18px;border:2px solid #fff;box-shadow:0 1px 8px rgba(0,0,0,.35)">🍦</div>`,
+      iconSize:[30,30], iconAnchor:[15,15]
+    })
+  }).addTo(map).bindPopup(`
     <h3>🎉 Final · Piazza Marina</h3>
     <p>Peces trobades: ${state.pieces.map(p=>`<span class="code-chip">${p}</span>`).join(' ')}</p>
     <p><b>Codi final:</b> ${state.pieces.join('')}</p>
     <p>Si heu arribat aquí amb totes les peces, la paraula és:</p>
     <h2 style="margin:6px 0">🍦 PALERMO GELATO 🍦</h2>
     <p class="small">Premi recomanat: gelat o berenar per a tot l'equip.</p>
-  `).openPopup();
+  `);
+  map.setView([38.118467, 13.369816], 16);
+  finalMarker.openPopup();
 }
 
 function mkStopPopup(s, idx) {
@@ -178,6 +186,7 @@ window.completeStop = function(idx){
     next.bindPopup(mkStopPopup(stops[state.current], state.current)).openPopup();
   } else {
     showFinal();
+    alert('🎉 Prova 5 superada! Ara us apareix al mapa el punt final del gelat a Piazza Marina.');
   }
 };
 
