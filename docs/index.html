@@ -31,7 +31,7 @@
   </style>
 </head>
 <body>
-  <div id="title">🧭 Gimcana Palerm · El Codi del Gelat</div>
+  <div id="title">🗺️ La Trinacria Perduda · El Secret de Palerm</div>
   <div id="progress">Peces trobades: <span id="pieces">0</span>/5</div>
   <div id="map"></div>
 
@@ -88,38 +88,38 @@ function addPiece(piece) {
 const stops = [
   {
     id:1, name:'Teatro Massimo', lat:38.120806, lng:13.357181, clue:'PA',
-    intro:'Troba la façana principal i identifica 2 elements teatrals (màscares, notes, cortines o similar).',
-    kids:'👧👦 Petits: assenyalar 2 detalls decoratius.',
-    big:'🧠 Grans: expliqueu en una frase per què aquest lloc és "teatral".',
-    next:'Pista següent: aneu al gran temple de la ciutat.'
+    intro:'🎭 CAPÍTOL 1 — El Teatre dels Susurrs. Les pedres del Massimo amaguen el primer fragment del secret.',
+    kids:'👧👦 Missió petits: trobar 2 detalls teatrals.',
+    big:'🧠 Missió grans: explicar en 1 frase per què aquest lloc sembla un escenari gegant.',
+    next:'Pista: ara cap al gran temple de la ciutat.'
   },
   {
     id:2, name:'Cattedrale di Palermo', lat:38.114599, lng:13.356300, clue:'LER',
-    intro:'Trobeu un escut o símbol sicilià. Si no, fotografia d’un detall heràldic.',
-    kids:'👧👦 Petits: trobar 2 torres.',
-    big:'🧠 Grans: llegir una inscripció o detectar un detall gòtic/àrab.',
-    next:'Pista següent: ara cap al creuament barroc dels quatre cantons.'
+    intro:'⛪ CAPÍTOL 2 — El Codi de les Torres. Una catedral feta de capes d’història us posa a prova.',
+    kids:'👧👦 Missió petits: trobar 2 torres o agulles.',
+    big:'🧠 Missió grans: localitzar un escut/símbol i deduir de quina època pot ser.',
+    next:'Pista: busqueu el creuament barroc dels quatre cantons.'
   },
   {
     id:3, name:'Quattro Canti', lat:38.115687, lng:13.361267, clue:'MO',
-    intro:'Observeu les 4 façanes. Quantes fonts veieu en total?',
-    kids:'👧👦 Petits: comptar les façanes.',
-    big:'🧠 Grans: trobar 2 diferències entre façanes oposades.',
-    next:'Pista següent: busqueu la plaça de la gran font amb estàtues.'
+    intro:'🧭 CAPÍTOL 3 — Els Quatre Vents. Al cor de Palerm, cada façana guarda una pista diferent.',
+    kids:'👧👦 Missió petits: comptar les 4 façanes i trobar una font.',
+    big:'🧠 Missió grans: detectar 2 diferències entre façanes oposades.',
+    next:'Pista: aneu cap a la gran font de les figures misterioses.'
   },
   {
     id:4, name:'Fontana Pretoria', lat:38.115520, lng:13.362342, clue:'GE',
-    intro:'Trobeu 3 figures diferents (animal, figura humana i escut/símbol).',
-    kids:'👧👦 Petits: fer de "caça-animals".',
-    big:'🧠 Grans: apuntar una hipòtesi de què representa la font.',
-    next:'Pista següent: aneu a la plaça amb cúpules vermelles.'
+    intro:'💧 CAPÍTOL 4 — La Font dels Enigmes. Els guardians petrificats us donen el quart fragment.',
+    kids:'👧👦 Missió petits: caça d’un animal i una figura humana.',
+    big:'🧠 Missió grans: formular una hipòtesi de què simbolitza aquesta font.',
+    next:'Pista: últim repte a les cúpules vermelles.'
   },
   {
     id:5, name:'Piazza Bellini', lat:38.114839, lng:13.362558, clue:'LATO',
-    intro:'Mireu Martorana / San Cataldo: trobeu les cúpules i un detall antic.',
-    kids:'👧👦 Petits: comptar cúpules visibles.',
-    big:'🧠 Grans: identificar una barreja d’estils (àrab/normand).',
-    next:'Final: aneu a Piazza Marina per desbloquejar el premi.'
+    intro:'🔴 CAPÍTOL 5 — Les Cúpules Vermelles. Aquí s’amaga la clau final de la Trinacria.',
+    kids:'👧👦 Missió petits: comptar cúpules visibles.',
+    big:'🧠 Missió grans: identificar una barreja d’estils (àrab/normand).',
+    next:'Final: amb les 5 peces, aneu a Piazza Marina a reclamar el tresor.'
   }
 ];
 
@@ -133,12 +133,12 @@ function showFinal() {
       iconSize:[30,30], iconAnchor:[15,15]
     })
   }).addTo(map).bindPopup(`
-    <h3>🎉 Final · Piazza Marina</h3>
+    <h3>🏁 FINAL ÈPIC · Piazza Marina</h3>
     <p>Peces trobades: ${state.pieces.map(p=>`<span class="code-chip">${p}</span>`).join(' ')}</p>
     <p><b>Codi final:</b> ${state.pieces.join('')}</p>
-    <p>Si heu arribat aquí amb totes les peces, la paraula és:</p>
+    <p>Heu reconstruït la Trinacria Perduda. Els guardians us reconeixen. La paraula final és:</p>
     <h2 style="margin:6px 0">🍦 PALERMO GELATO 🍦</h2>
-    <p class="small">Premi recomanat: gelat o berenar per a tot l'equip.</p>
+    <p class="small">Premi desbloquejat: gelat o berenar per a tota l'expedició. Missió completada ✨</p>
   `);
   map.setView([38.118467, 13.369816], 16);
   finalMarker.openPopup();
@@ -186,16 +186,17 @@ window.completeStop = function(idx){
     next.bindPopup(mkStopPopup(stops[state.current], state.current)).openPopup();
   } else {
     showFinal();
-    alert('🎉 Prova 5 superada! Ara us apareix al mapa el punt final del gelat a Piazza Marina.');
+    alert('🎉 Última prova superada! El tresor final s'ha desbloquejat: aneu al marcador 🍦 de Piazza Marina.');
   }
 };
 
 const start = L.marker([38.120806, 13.357181]).addTo(map);
 start.bindPopup(`
-  <h3>🚩 Inici de joc</h3>
-  <p>Ruta curta, cooperativa i familiar. Cada punt dona una peça de codi. Quan tingueu totes les peces, desbloquegeu el premi final.</p>
-  <button class="btn" onclick="map.closePopup(); markers[0].openPopup();">Començar!</button>
-  <p class="small">Durada objectiu: 60–120 min · Distància: ~2 km</p>
+  <h3>🚩 La Trinacria Perduda · Pròleg</h3>
+  <p>Fa segles, els guardians de Palerm van amagar la <b>Trinacria de la Llum</b> en 5 fragments. Avui la vostra expedició l'ha de reconstruir.</p>
+  <p class="small">👧👦 Petits: detectius d'observació · 🧠 Grans: estrategues de deducció · Adults: comandament de missió.</p>
+  <button class="btn" onclick="map.closePopup(); markers[0].openPopup();">Començar l’aventura!</button>
+  <p class="small">Durada objectiu: 60–120 min · Distància: ~2 km · Recompensa final: 🍦</p>
 `).openPopup();
 </script>
 </body>
