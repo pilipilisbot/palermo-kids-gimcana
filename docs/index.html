@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="ca">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>Gimcana Palerm · El Codi del Gelat</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/leaflet@1.9.4/dist/leaflet.css" />
+  <script src="https://cdn.jsdelivr.net/npm/leaflet@1.9.4/dist/leaflet.js"></script>
+  <style>
+    html, body { margin:0; height:100%; font-family: Arial, sans-serif; background:#f6f7fb; }
+    #map { width:100%; height:100%; }
+    #title {
+      position:absolute; top:10px; left:50%; transform:translateX(-50%); z-index:1000;
+      background:rgba(255,255,255,.95); padding:10px 14px; border-radius:10px; font-weight:700;
+      box-shadow:0 2px 10px rgba(0,0,0,.15); text-align:center;
+    }
+    #progress {
+      position:absolute; top:66px; left:50%; transform:translateX(-50%); z-index:1000;
+      background:rgba(255,255,255,.95); padding:8px 12px; border-radius:10px; font-size:14px;
+      box-shadow:0 2px 10px rgba(0,0,0,.12);
+    }
+    .btn { background:#0d6efd; color:#fff; border:none; border-radius:8px; padding:8px 12px; cursor:pointer; font-weight:600; }
+    .btn:disabled { opacity:.45; cursor:not-allowed; }
+    .small { font-size:13px; color:#555; }
+    .code-chip { display:inline-block; background:#fff3cd; border:1px solid #ffe69c; border-radius:8px; padding:2px 8px; margin:2px; font-weight:700; }
+    .gps-btn {
+      background:#fff; width:34px; height:34px; display:flex; align-items:center; justify-content:center;
+      border:2px solid #0d6efd; border-radius:6px; cursor:pointer; font-size:16px;
+    }
+    .gps-btn.active { background:#0d6efd; color:#fff; }
+  </style>
+</head>
+<body>
+  <div id="title">🧭 Gimcana Palerm · El Codi del Gelat</div>
+  <div id="progress">Peces trobades: <span id="pieces">0</span>/5</div>
+  <div id="map"></div>
+
+<script>
+const map = L.map('map', {center:[38.1165, 13.3618], zoom:15});
+L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+  maxZoom: 19,
+  attribution: '&copy; OpenStreetMap'
+}).addTo(map);
+L.control.scale().addTo(map);
+
+let userMarker = null, userCircle = null, watchId = null, gpsActive = false;
+const gpsControl = L.Control.extend({
+  options:{position:'topleft'},
+  onAdd: function() {
+    const b = L.DomUtil.create('div', 'gps-btn');
+    b.innerHTML = '📍';
+    b.title = 'Activar/desactivar GPS';
+    L.DomEvent.disableClickPropagation(b);
+    b.onclick = () => {
+      if (gpsActive) {
+        if (watchId !== null) navigator.geolocation.clearWatch(watchId);
+        watchId = null; gpsActive = false; b.classList.remove('active');
+        if (userMarker) { map.removeLayer(userMarker); map.removeLayer(userCircle); userMarker=null; userCircle=null; }
+      } else {
+        if (!navigator.geolocation) return alert('Aquest navegador no suporta GPS');
+        watchId = navigator.geolocation.watchPosition((p)=>{
+          const latlng=[p.coords.latitude,p.coords.longitude];
+          if (!userMarker) {
+            userMarker = L.circleMarker(latlng,{radius:7,color:'#0d6efd',fillColor:'#fff',fillOpacity:1,weight:3}).addTo(map);
+            userCircle = L.circle(latlng,{radius:Math.max(15,p.coords.accuracy||25),color:'#0d6efd',fillColor:'#0d6efd',fillOpacity:.12}).addTo(map);
+            map.setView(latlng,16);
+          } else {
+            userMarker.setLatLng(latlng);
+            userCircle.setLatLng(latlng);
+            userCircle.setRadius(Math.max(15,p.coords.accuracy||25));
+          }
+        }, (e)=>console.warn(e.message), {enableHighAccuracy:true, maximumAge:0});
+        gpsActive = true; b.classList.add('active');
+      }
+    };
+    return b;
+  }
+});
+map.addControl(new gpsControl());
+
+const state = { current: 0, pieces: [] };
+const piecesEl = document.getElementById('pieces');
+function addPiece(piece) {
+  if (!state.pieces.includes(piece)) state.pieces.push(piece);
+  piecesEl.textContent = state.pieces.length;
+}
+
+const stops = [
+  {
+    id:1, name:'Teatro Massimo', lat:38.120806, lng:13.357181, clue:'PAR',
+    intro:'Troba la façana principal i identifica 2 elements teatrals (màscares, notes, cortines o similar).',
+    kids:'👧👦 Petits: assenyalar 2 detalls decoratius.',
+    big:'🧠 Grans: expliqueu en una frase per què aquest lloc és "teatral".',
+    next:'Pista següent: aneu on 4 carrers es creuen en un escenari barroc.'
+  },
+  {
+    id:2, name:'Quattro Canti', lat:38.115687, lng:13.361267, clue:'LER',
+    intro:'Observeu les 4 façanes. Quantes fonts veieu en total?',
+    kids:'👧👦 Petits: comptar les façanes.',
+    big:'🧠 Grans: trobar 2 diferències entre façanes oposades.',
+    next:'Pista següent: busqueu la plaça de la gran font amb estàtues.'
+  },
+  {
+    id:3, name:'Fontana Pretoria', lat:38.115520, lng:13.362342, clue:'MO',
+    intro:'Trobeu 3 figures diferents (animal, figura humana i escut/símbol).',
+    kids:'👧👦 Petits: fer de "caça-animals".',
+    big:'🧠 Grans: apuntar una hipòtesi de què representa la font.',
+    next:'Pista següent: aneu a la plaça amb cúpules vermelles.'
+  },
+  {
+    id:4, name:'Piazza Bellini', lat:38.114839, lng:13.362558, clue:'GE',
+    intro:'Mireu Martorana / San Cataldo: trobeu les cúpules i un detall antic.',
+    kids:'👧👦 Petits: comptar cúpules visibles.',
+    big:'🧠 Grans: identificar una barreja d’estils (àrab/normand).',
+    next:'Pista següent: toqueu de peus a la catedral.'
+  },
+  {
+    id:5, name:'Cattedrale di Palermo', lat:38.114599, lng:13.356300, clue:'LATO',
+    intro:'Trobeu un escut o símbol sicilià. Si no, fotografia d’un detall heràldic.',
+    kids:'👧👦 Petits: trobar 2 torres.',
+    big:'🧠 Grans: llegir la pista final i deduir la paraula amagada.',
+    next:'Final: aneu a Piazza Marina per desbloquejar el premi.'
+  }
+];
+
+let finalMarker = null;
+function showFinal() {
+  if (finalMarker) return;
+  finalMarker = L.marker([38.118467, 13.369816]).addTo(map).bindPopup(`
+    <h3>🎉 Final · Piazza Marina</h3>
+    <p>Peces trobades: ${state.pieces.map(p=>`<span class="code-chip">${p}</span>`).join(' ')}</p>
+    <p><b>Codi final:</b> ${state.pieces.join('')}</p>
+    <p>Si heu arribat aquí amb totes les peces, la paraula és:</p>
+    <h2 style="margin:6px 0">🍦 PALERMO GELATO 🍦</h2>
+    <p class="small">Premi recomanat: gelat o berenar per a tot l'equip.</p>
+  `).openPopup();
+}
+
+function mkStopPopup(s, idx) {
+  const isLocked = idx !== state.current;
+  return `
+    <h3>📍 Prova ${s.id}: ${s.name}</h3>
+    <p>${s.intro}</p>
+    <p class="small">${s.kids}<br>${s.big}</p>
+    <p><b>Peça de codi (quan ho resolgueu):</b> <span class="code-chip">${s.clue}</span></p>
+    <p class="small">${s.next}</p>
+    <button class="btn" ${isLocked ? 'disabled' : ''} onclick="completeStop(${idx})">✅ Prova superada</button>
+  `;
+}
+
+const markers = stops.map((s, idx) => {
+  const icon = L.divIcon({
+    className:'',
+    html:`<div style="width:28px;height:28px;border-radius:50%;background:${idx===0?'#0d6efd':'#6c757d'};color:#fff;display:flex;align-items:center;justify-content:center;font-weight:700;border:2px solid #fff;box-shadow:0 1px 6px rgba(0,0,0,.3)">${s.id}</div>`,
+    iconSize:[28,28], iconAnchor:[14,14]
+  });
+  const m = L.marker([s.lat,s.lng],{icon}).addTo(map).bindPopup(mkStopPopup(s, idx));
+  return m;
+});
+
+window.completeStop = function(idx){
+  const s = stops[idx];
+  if (idx !== state.current) return;
+  addPiece(s.clue);
+  state.current += 1;
+
+  markers[idx].setIcon(L.divIcon({
+    html:`<div style="width:28px;height:28px;border-radius:50%;background:#198754;color:#fff;display:flex;align-items:center;justify-content:center;font-weight:700;border:2px solid #fff;box-shadow:0 1px 6px rgba(0,0,0,.3)">✓</div>`,
+    iconSize:[28,28], iconAnchor:[14,14]
+  }));
+
+  if (state.current < stops.length) {
+    const next = markers[state.current];
+    next.setIcon(L.divIcon({
+      html:`<div style="width:28px;height:28px;border-radius:50%;background:#0d6efd;color:#fff;display:flex;align-items:center;justify-content:center;font-weight:700;border:2px solid #fff;box-shadow:0 1px 6px rgba(0,0,0,.3)">${stops[state.current].id}</div>`,
+      iconSize:[28,28], iconAnchor:[14,14]
+    }));
+    next.bindPopup(mkStopPopup(stops[state.current], state.current)).openPopup();
+  } else {
+    showFinal();
+  }
+};
+
+const start = L.marker([38.120806, 13.357181]).addTo(map);
+start.bindPopup(`
+  <h3>🚩 Inici de joc</h3>
+  <p>Ruta curta, cooperativa i familiar. Cada punt dona una peça de codi. Quan tingueu totes les peces, desbloquegeu el premi final.</p>
+  <button class="btn" onclick="map.closePopup(); markers[0].openPopup();">Començar!</button>
+  <p class="small">Durada objectiu: 60–120 min · Distància: ~2 km</p>
+`).openPopup();
+</script>
+</body>
+</html>
