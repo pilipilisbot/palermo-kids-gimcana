@@ -138,7 +138,7 @@ function showFinal() {
     <p><b>Codi final:</b> ${state.pieces.join('')}</p>
     <p>Heu reconstruït la Trinacria Perduda. Els guardians us reconeixen. La paraula final és:</p>
     <h2 style="margin:6px 0">🍦 PALERMO GELATO 🍦</h2>
-    <p class="small">Premi desbloquejat: gelat o berenar per a tota l'expedició. Missió completada ✨</p>
+    <p class="small">Premi desbloquejat: gelat o berenar per a tota l’expedició. Missió completada ✨</p>
   `);
   map.setView([38.118467, 13.369816], 16);
   finalMarker.openPopup();
@@ -186,7 +186,7 @@ window.completeStop = function(idx){
     next.bindPopup(mkStopPopup(stops[state.current], state.current)).openPopup();
   } else {
     showFinal();
-    alert('🎉 Última prova superada! El tresor final s'ha desbloquejat: aneu al marcador 🍦 de Piazza Marina.');
+    alert('🎉 Última prova superada! El tresor final s’ha desbloquejat: aneu al marcador 🍦 de Piazza Marina.');
   }
 };
 
