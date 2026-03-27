@@ -1,0 +1,13 @@
+{
+  "city": "Palermo",
+  "version": "v1",
+  "routeType": "family-short",
+  "stops": [
+    {"id": 1, "name": "Teatro Massimo", "lat": 38.120806, "lon": 13.357181},
+    {"id": 2, "name": "Quattro Canti", "lat": 38.115687, "lon": 13.361267},
+    {"id": 3, "name": "Fontana Pretoria", "lat": 38.115520, "lon": 13.362342},
+    {"id": 4, "name": "Piazza Bellini", "lat": 38.114839, "lon": 13.362558},
+    {"id": 5, "name": "Cattedrale di Palermo", "lat": 38.114599, "lon": 13.356300},
+    {"id": 6, "name": "Piazza Marina (Ficus)", "lat": 38.118467, "lon": 13.369816}
+  ]
+}
